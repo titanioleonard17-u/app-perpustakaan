@@ -19,6 +19,10 @@
         .btn { display: inline-block; padding: 6px 14px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; }
         form.inline { display: inline; }
         footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; border-top: 1px solid #e5e7eb; margin-top: 40px; }
+            .badge { display: inline-block; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: bold; }
+        .badge-dikembalikan { background: #d1fae5; color: #065f46; }
+        .badge-dipinjam { background: #fef3c7; color: #92400e; }
+        .badge-terlambat { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body>
