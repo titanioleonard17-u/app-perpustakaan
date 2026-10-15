@@ -31,7 +31,7 @@
         @enderror
 
         <label for="email">Email</label>
-        <input type="text" name="email" id="email" value="{{ old('email') }}">
+        <input type="email" name="email" id="email" value="{{ old('email') }}">
         @error('email')
             <div class="error">{{ $message }}</div>
         @enderror
@@ -50,8 +50,7 @@
 
         <label for="status">Status</label>
         <select name="status" id="status">
-            <option value="">-- Pilih Status --</option>
-            <option value="aktif" @selected(old('status') == 'aktif')>Aktif</option>
+            <option value="aktif" @selected(old('status', 'aktif') == 'aktif')>Aktif</option>
             <option value="nonaktif" @selected(old('status') == 'nonaktif')>Nonaktif</option>
         </select>
         @error('status')
