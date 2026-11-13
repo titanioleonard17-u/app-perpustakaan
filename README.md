@@ -1,17 +1,91 @@
-#Nama Aplikasi:
-App Perpustakaan
+# app-perpustakaan
 
-#Tujuan:
-Meningkatkan minat membaca masyarakat secara online, serta memberikan hak akses ke beberapa buku rekomendasi
+Sistem Perpustakaan Digital Kampus — aplikasi web Laravel 12 untuk mengelola buku, kategori, anggota, dan transaksi peminjaman, dibangun bertahap sepanjang mata kuliah Pemrograman Framework (PENS), checkpoint [P-1] s.d. [P-10] di branch `dev`.
 
-#cara menjalankan project secara lokal:
-Aktifkan XAMPP, nyalakan APACHE dan MYSQL
-Pastikan database db_perpustakaan sudah tersedia di MySQL.
-Buka terminal pada folder project.
-Jalankan perintah:
-php artisan serve
-Buka browser dan akses:
-http://127.0.0.1:8000
+## Fitur
 
-#Model, View, dan Controller
-odel digunakan untuk mengatur dan mengelola data aplikasi, View digunakan untuk menampilkan data atau tampilan kepada pengguna, sedangkan Controller mengatur proses dan menjadi penghubung antara Model dan View. Jadi, Model berfokus pada data, View pada tampilan, dan Controller pada alur proses aplikasi.
+- CRUD books, categories, members, loans (Eloquent + Form Request validation)
+- Relasi Eloquent: Loan → Member/User/LoanItem → Book → Category, dengan eager loading
+- Autentikasi session (login/logout) + middleware `auth` dan `CheckAdminRole` (role admin/petugas)
+- REST API JSON (`/api/books`, `/api/members`, `/api/loans`, `/api/stats`) via API Resource
+- Dashboard statistik dan Laporan Peminjaman yang mengonsumsi API internal lewat Laravel HTTP Client
+- Seeder & Factory dengan data dummy bergaya Indonesia (`APP_FAKER_LOCALE=id_ID`)
+- Search nama anggota, badge status peminjaman, halaman profil + ganti password
+
+## Cara Menjalankan Secara Lokal
+
+Prasyarat: PHP >= 8.2, Composer, Git, dan MySQL berjalan (mis. lewat Laragon).
+
+**1. Clone & masuk ke folder project**
+
+```bash
+git clone https://github.com/ArdineSB/app-perpustakaan.git
+cd app-perpustakaan
+git checkout dev
+```
+
+**2. Install dependency**
+
+```bash
+composer install
+```
+
+**3. Setup environment**
+
+```bash
+copy .env.example .env
+php artisan key:generate
+```
+
+**4. Atur database di `.env`**
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=db_perpustakaan
+DB_USERNAME=root
+```
+
+**5. Buat database & jalankan migration + seeder**
+
+```bash
+mysql -u root -e "CREATE DATABASE db_perpustakaan"
+php artisan migrate:fresh --seed
+```
+
+## Dua Server — WAJIB untuk Dashboard & Laporan
+
+`php artisan serve` hanya memproses satu request dalam satu waktu, jadi kalau aplikasi memanggil API-nya sendiri lewat port yang sama akan deadlock. Karena itu jalankan **dua server** di dua terminal terpisah:
+
+```bash
+# Terminal 1 - server utama untuk browser
+php artisan serve --port=8000
+```
+
+```bash
+# Terminal 2 - server kedua untuk API internal
+php artisan serve --port=8011
+```
+
+Server kedua dibaca lewat `INTERNAL_API_URL=http://127.0.0.1:8011` di `.env` (terdaftar di `config/services.php` sebagai `services.internal_api.base_url`). Dashboard (`GET /api/stats`) dan Laporan Peminjaman (`GET /api/loans`) memanggil server ini lewat `Http::get()`. Kalau server kedua mati, kedua halaman tetap tampil tapi kosong/angka nol (fallback `try/catch ConnectionException`), bukan error 500.
+
+Buka `http://127.0.0.1:8000` di browser.
+
+## Akun Hasil Seeding
+
+| Email | Password | Role |
+|---|---|---|
+| admin@pens.ac.id | password | admin |
+| petugas1@pens.ac.id | password | petugas |
+| petugas2@pens.ac.id | password | petugas |
+
+Data dummy: 5 kategori, 20 buku (judul+penerbit kurasi Indonesia), 15 anggota (email `@pens.ac.id`), 10 transaksi peminjaman.
+
+## Perbedaan Model, View, dan Controller
+
+Menurut pemahaman saya, **Model** bertugas mengelola data dan aturan terkait database, **View** hanya menampilkan tampilan HTML ke pengguna, dan **Controller** menjadi penghubung yang menerima request lalu meminta data ke Model sebelum mengirimkannya ke View. Ketiganya dipisah supaya kode tidak campur aduk dalam satu file, sehingga lebih mudah diubah dan dilacak saat ada error.
+
+## Skenario Demo UAS
+
+Lihat [`DEMO.md`](./DEMO.md).
