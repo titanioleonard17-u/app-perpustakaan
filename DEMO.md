@@ -1,6 +1,4 @@
-Skenario Demo UAS
-
-Catatan saya untuk urutan demo aplikasi Perpustakaan Digital Kampus pas UAS nanti, biar tidak lupa langkahnya dan sesuai outline Pertemuan 11.
+Catatan untuk urutan demo aplikasi Perpustakaan Digital Kampus 
 
 Sebelum mulai
 
